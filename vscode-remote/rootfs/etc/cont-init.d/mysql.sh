@@ -1,4 +1,5 @@
 #!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
 # ==============================================================================
 # Home Assistant Community Add-on: VSCode Remote
 # Pre-configures the MySQL clients, if the service is available
@@ -21,5 +22,5 @@ if bashio::services.available "mysql"; then
     echo "password=\"${password}\""
     echo "port=${port}"
     echo "user=\"${username}\""
-  } > /etc/mysql/conf.d/service.cnf
+  } >/etc/mysql/conf.d/service.cnf
 fi

@@ -1,4 +1,5 @@
 #!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
 # ==============================================================================
 # Home Assistant Community Add-on: VSCode Remote
 # Pre-configures the Mosquitto clients, if the service is available
@@ -20,7 +21,7 @@ if bashio::services.available "mqtt"; then
     echo "--pw ${password}"
     echo "--port ${port}"
     echo "--username ${username}"
-  } > /root/.config/mosquitto_sub
+  } >/root/.config/mosquitto_sub
 
   ln -s /root/.config/mosquitto_sub /root/.config/mosquitto_pub
   ln -s /root/.config/mosquitto_sub /root/.config/mosquitto_rr

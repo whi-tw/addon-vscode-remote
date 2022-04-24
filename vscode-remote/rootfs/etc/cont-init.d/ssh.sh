@@ -1,4 +1,5 @@
 #!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
 # ==============================================================================
 # Home Assistant Community Add-on: VSCode Remote
 # Configures the SSH daemon
@@ -10,9 +11,8 @@ readonly SSH_HOST_RSA_KEY=/data/ssh_host_rsa_key
 declare password
 
 # We require at least a password or an authorized key
-if bashio::config.is_empty 'authorized_keys' \
-    && bashio::config.is_empty 'password';
-then
+if bashio::config.is_empty 'authorized_keys' &&
+    bashio::config.is_empty 'password'; then
     bashio::log.fatal
     bashio::log.fatal 'Configuration of this add-on is incomplete.'
     bashio::log.fatal
@@ -27,8 +27,8 @@ then
 fi
 
 # Require a secure password
-if bashio::config.has_value 'password' \
-    && ! bashio::config.true 'i_like_to_be_pwned'; then
+if bashio::config.has_value 'password' &&
+    ! bashio::config.true 'i_like_to_be_pwned'; then
     bashio::config.require.safe_password 'password'
 fi
 
@@ -46,14 +46,14 @@ fi
 if ! bashio::fs.file_exists "${SSH_HOST_RSA_KEY}"; then
     bashio::log.notice 'RSA host key missing, generating one...'
 
-    ssh-keygen -t rsa -f "${SSH_HOST_RSA_KEY}" -N "" \
-        || bashio::exit.nok 'Failed to generate RSA host key'
+    ssh-keygen -t rsa -f "${SSH_HOST_RSA_KEY}" -N "" ||
+        bashio::exit.nok 'Failed to generate RSA host key'
 fi
 
 if ! bashio::fs.file_exists "${SSH_HOST_ED25519_KEY}"; then
     bashio::log.notice 'ED25519 host key missing, generating one...'
-    ssh-keygen -t ed25519 -f "${SSH_HOST_ED25519_KEY}" -N "" \
-        || bashio::exit.nok 'Failed to generate ED25519 host key'
+    ssh-keygen -t ed25519 -f "${SSH_HOST_ED25519_KEY}" -N "" ||
+        bashio::exit.nok 'Failed to generate ED25519 host key'
 fi
 
 # We need to set a password for the user account
@@ -63,18 +63,18 @@ else
     # Use a random password in case none is set
     password=$(pwgen 64 1)
 fi
-chpasswd <<< "root:${password}" 2&> /dev/null
+chpasswd <<<"root:${password}" 2 &>/dev/null
 
 # Sets up the authorized SSH keys
 if bashio::config.has_value 'authorized_keys'; then
     while read -r key; do
-        echo "${key}" >> "${SSH_AUTHORIZED_KEYS_PATH}"
-    done <<< "$(bashio::config 'authorized_keys')"
+        echo "${key}" >>"${SSH_AUTHORIZED_KEYS_PATH}"
+    done <<<"$(bashio::config 'authorized_keys')"
 fi
 
 # Enable password authentication when password is set
 if bashio::config.has_value 'ssh.password'; then
     sed -i "s/PasswordAuthentication.*/PasswordAuthentication\\ yes/" \
-        "${SSH_CONFIG_PATH}" \
-          || bashio::exit.nok 'Failed to setup SSH password authentication'
+        "${SSH_CONFIG_PATH}" ||
+        bashio::exit.nok 'Failed to setup SSH password authentication'
 fi

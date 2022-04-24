@@ -1,4 +1,5 @@
 #!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
 # ==============================================================================
 # Home Assistant Community Add-on: VSCode Remote
 # Persists user settings and installs custom user packages.
@@ -12,67 +13,67 @@ readonly ZSH_HISTORY_PERSISTANT_FILE=/data/.zsh_history
 
 # Links some common directories to the user's home folder for convenience
 for dir in "${DIRECTORIES[@]}"; do
-    ln -s "/${dir}" "${HOME}/${dir}" \
-        || bashio::log.warning "Failed linking common directory: ${dir}"
+    ln -s "/${dir}" "${HOME}/${dir}" ||
+        bashio::log.warning "Failed linking common directory: ${dir}"
 done
 
 # Store SSH settings in add-on data folder
 if ! bashio::fs.directory_exists "${SSH_USER_PATH}"; then
-    mkdir -p "${SSH_USER_PATH}" \
-        || bashio::exit.nok 'Failed to create a persistent .ssh folder'
+    mkdir -p "${SSH_USER_PATH}" ||
+        bashio::exit.nok 'Failed to create a persistent .ssh folder'
 
-    chmod 700 "${SSH_USER_PATH}" \
-        || bashio::exit.nok \
+    chmod 700 "${SSH_USER_PATH}" ||
+        bashio::exit.nok \
             'Failed setting permissions on persistent .ssh folder'
 fi
 ln -s "${SSH_USER_PATH}" ~/.ssh
 
 # Sets up ZSH shell
-touch "${ZSH_HISTORY_PERSISTANT_FILE}" \
-    || bashio::exit.nok 'Failed creating a persistent ZSH history file'
+touch "${ZSH_HISTORY_PERSISTANT_FILE}" ||
+    bashio::exit.nok 'Failed creating a persistent ZSH history file'
 
-chmod 600 "$ZSH_HISTORY_PERSISTANT_FILE" \
-    || bashio::exit.nok \
+chmod 600 "$ZSH_HISTORY_PERSISTANT_FILE" ||
+    bashio::exit.nok \
         'Failed setting the correct permissions to the ZSH history file'
 
-ln -s -f "$ZSH_HISTORY_PERSISTANT_FILE" "$ZSH_HISTORY_FILE" \
-    || bashio::exit.nok 'Failed linking the persistant ZSH history file'
+ln -s -f "$ZSH_HISTORY_PERSISTANT_FILE" "$ZSH_HISTORY_FILE" ||
+    bashio::exit.nok 'Failed linking the persistant ZSH history file'
 
 sed -i "1iexport SUPERVISOR_TOKEN=\"${SUPERVISOR_TOKEN}\"" \
-    "${HOME_ASSISTANT_PROFILE_D_FILE}" \
-        || bashio::exit.nok 'Failed to export Supervisor API token'
+    "${HOME_ASSISTANT_PROFILE_D_FILE}" ||
+    bashio::exit.nok 'Failed to export Supervisor API token'
 
 # Store user GIT settings in add-on data folder
 if ! bashio::fs.directory_exists "${GIT_USER_PATH}"; then
-    mkdir -p "${GIT_USER_PATH}" \
-        || bashio::exit.nok 'Failed to create a persistent git folder'
+    mkdir -p "${GIT_USER_PATH}" ||
+        bashio::exit.nok 'Failed to create a persistent git folder'
 
-    chmod 700 "${GIT_USER_PATH}" \
-        || bashio::exit.nok \
+    chmod 700 "${GIT_USER_PATH}" ||
+        bashio::exit.nok \
             'Failed setting permissions on persistent git folder'
 fi
 
 if ! bashio::fs.file_exists "${GIT_USER_PATH}/.gitconfig"; then
-    touch "${GIT_USER_PATH}/.gitconfig" \
-        || bashio::exit.nok 'Failed to create .gitconfig'
+    touch "${GIT_USER_PATH}/.gitconfig" ||
+        bashio::exit.nok 'Failed to create .gitconfig'
 fi
 ln -s "${GIT_USER_PATH}/.gitconfig" ~/.gitconfig
 
 # Install user configured/requested packages
 if bashio::config.has_value 'packages'; then
-    apt update \
-        || bashio::exit.nok 'Failed updating Ubuntu packages repository indexes'
+    apt update ||
+        bashio::exit.nok 'Failed updating Ubuntu packages repository indexes'
 
     for package in $(bashio::config 'packages'); do
-        apt-get install -y "$package" \
-            || bashio::exit.nok "Failed installing package ${package}"
+        apt-get install -y "$package" ||
+            bashio::exit.nok "Failed installing package ${package}"
     done
 fi
 
 # Executes user configured/requested commands on startup
 if bashio::config.has_value 'init_commands'; then
     while read -r cmd; do
-        eval "${cmd}" \
-            || bashio::exit.nok "Failed executing init command: ${cmd}"
-    done <<< "$(bashio::config 'init_commands')"
+        eval "${cmd}" ||
+            bashio::exit.nok "Failed executing init command: ${cmd}"
+    done <<<"$(bashio::config 'init_commands')"
 fi

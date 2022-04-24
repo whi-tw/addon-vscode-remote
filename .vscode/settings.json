@@ -1,0 +1,4 @@
+{
+  "docker.languageserver.formatter.ignoreMultilineInstructions": true,
+  "files.eol": "\n"
+}
