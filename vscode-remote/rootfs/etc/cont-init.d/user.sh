@@ -6,7 +6,7 @@
 # ==============================================================================
 readonly -a DIRECTORIES=(addons backup config share ssl)
 readonly GIT_USER_PATH=/data/git
-readonly HOME_ASSISTANT_PROFILE_D_FILE=/etc/profile.d/homeassistant.sh
+readonly ZSH_ENV_FILE=/root/.zshenv
 readonly SSH_USER_PATH=/data/.ssh
 readonly ZSH_HISTORY_FILE=/root/.zsh_history
 readonly ZSH_HISTORY_PERSISTANT_FILE=/data/.zsh_history
@@ -40,7 +40,7 @@ ln -s -f "$ZSH_HISTORY_PERSISTANT_FILE" "$ZSH_HISTORY_FILE" ||
     bashio::exit.nok 'Failed linking the persistant ZSH history file'
 
 sed -i "1iexport SUPERVISOR_TOKEN=\"${SUPERVISOR_TOKEN}\"" \
-    "${HOME_ASSISTANT_PROFILE_D_FILE}" ||
+    "${ZSH_ENV_FILE}" ||
     bashio::exit.nok 'Failed to export Supervisor API token'
 
 # Store user GIT settings in add-on data folder

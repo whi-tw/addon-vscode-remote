@@ -36,9 +36,9 @@ RUN \
         net-tools=1.60+git20181103.0eebece-1 \
         nmap=7.91+dfsg1+really7.80+dfsg1-2 \
         openssh-client=1:8.4p1-5 \
-        openssh=8.8_p1-r1 \
+        openssh-server=1:8.4p1-5 \
         openssl=1.1.1n-0+deb11u1 \
-        pwgen=2.08-r1 \
+        pwgen=2.08-2 \
         python3-dev=3.9.2-3 \
         python3=3.9.2-3 \
         wget=1.21-1+deb11u1 \
@@ -78,13 +78,13 @@ RUN \
     && chmod a+x /usr/bin/ha \
     \
     && git clone --branch master --single-branch --depth 1 \
-        "git://github.com/robbyrussell/oh-my-zsh.git" ~/.oh-my-zsh \
+        "https://github.com/robbyrussell/oh-my-zsh.git" ~/.oh-my-zsh \
     \
     && git clone --branch master --single-branch --depth 1 \
-        "git://github.com/zsh-users/zsh-autosuggestions" \
+        "https://github.com/zsh-users/zsh-autosuggestions" \
         ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions \
     && git clone --branch master --single-branch --depth 1 \
-        "git://github.com/zsh-users/zsh-syntax-highlighting.git" \
+        "https://github.com/zsh-users/zsh-syntax-highlighting.git" \
         ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting \
     \
     && sed -i -e "s#bin/bash#bin/zsh#" /etc/passwd \
